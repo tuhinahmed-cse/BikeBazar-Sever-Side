@@ -19,6 +19,7 @@ async function run() {
     try {
 
         const bikeCollection = client.db('bikeBazar').collection('allBike');
+        const bookingCollection = client.db('bikeBazar').collection('bookings');
 
 
 
@@ -50,6 +51,15 @@ async function run() {
             const bike = await cursor.toArray();
             res.send(bike);
         });
+
+
+// Booking
+
+        app.post('/bookings', async (req, res) => {
+            const booking = req.body;
+            const result = await bookingCollection.insertOne(booking);
+            res.send(result);
+        })
 
 
     }
