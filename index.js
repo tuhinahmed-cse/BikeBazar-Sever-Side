@@ -130,13 +130,13 @@ async function run() {
 
     
 
-        app.get('/buyers',verifyJWT, async (req, res) => {
+        app.get('/buyers', async (req, res) => {
                 const query = {};
                 const users = await usersCollection.find({role:'Buyer'}).toArray();
                 res.send(users);
             });
 
-        app.get('/sellers', verifyJWT, async (req, res) => {
+        app.get('/sellers', async (req, res) => {
                 const query = {};
                 const users = await usersCollection.find({role:'Seller'}).toArray();
                 res.send(users);
@@ -157,6 +157,30 @@ async function run() {
                 const result = await usersCollection.updateOne(filter, updatedDoc, options);
                 res.send(result);
             });
+
+            app.get('/users/admin/:email', async (req, res) => {
+                const email = req.params.email;
+                const query = { email }
+                const user = await usersCollection.findOne(query);
+                res.send({ isAdmin: user?.role === 'admin' });
+            })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     }
 
