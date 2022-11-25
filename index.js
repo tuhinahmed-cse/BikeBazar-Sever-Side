@@ -130,9 +130,15 @@ async function run() {
 
     
 
-        app.get('/buyers', async (req, res) => {
+        app.get('/buyers',verifyJWT, async (req, res) => {
                 const query = {};
                 const users = await usersCollection.find({role:'Buyer'}).toArray();
+                res.send(users);
+            });
+
+        app.get('/sellers', verifyJWT, async (req, res) => {
+                const query = {};
+                const users = await usersCollection.find({role:'Seller'}).toArray();
                 res.send(users);
             });
 
@@ -161,7 +167,7 @@ async function run() {
 
 
     }
-    
+
 
 
 
