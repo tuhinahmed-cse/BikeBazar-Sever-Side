@@ -20,6 +20,7 @@ async function run() {
 
         const bikeCollection = client.db('bikeBazar').collection('allBike');
         const bookingCollection = client.db('bikeBazar').collection('bookings');
+        const usersCollection = client.db('bikeBazar').collection('users');
 
 
 
@@ -46,26 +47,36 @@ async function run() {
         app.get('/bikes/:id', async (req, res) => {
             const id = req.params.id;
             const query = {
-                category_id: id };
+                category_id: id
+            };
             const cursor = bikeCollection.find(query);
             const bike = await cursor.toArray();
             res.send(bike);
         });
 
 
-// Booking
-app.get('/bookings', async (req, res) => {
-    const email = req.query.email;
-    const query = { email: email };
-    const bookings = await bookingCollection.find(query).toArray();
-    res.send(bookings);
-})
+        // Booking
+        app.get('/bookings', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email };
+            const bookings = await bookingCollection.find(query).toArray();
+            res.send(bookings);
+        })
 
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
             const result = await bookingCollection.insertOne(booking);
             res.send(result);
         })
+
+
+        // users Collection
+
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await usersCollection.insertOne(user);
+            res.send(result);
+        });
 
 
     }
