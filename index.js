@@ -121,20 +121,47 @@ async function run() {
             res.send(result);
         });
 
-        app.delete('/users/:id',  async (req, res) => {
+        app.delete('/users/:id',verifyJWT,  async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const result = await usersCollection.deleteOne(filter);
             res.send(result);
         })
 
+    
+
+        app.get('/buyers', async (req, res) => {
+                const query = {};
+                const users = await usersCollection.find({role:'Buyer'}).toArray();
+                res.send(users);
+            });
+
+
+
+
+            app.put('/users/:email', verifyJWT, async (req, res) => {
+                const email = req.params.email;
+                const filter = { email }
+                const options = { upsert: true };
+                const updatedDoc = {
+                    $set: {
+                        role: 'Buyer'
+                    }
+                }
+                const result = await usersCollection.updateOne(filter, updatedDoc, options);
+                res.send(result);
+            });
 
     }
+
+
+    
 
     finally {
 
 
     }
+    
 
 
 
