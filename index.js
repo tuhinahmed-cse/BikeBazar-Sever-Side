@@ -233,6 +233,34 @@ async function run() {
             });
 
 
+            app.put('/report/:id', async (req, res) => {
+                const id = req.params.id;
+                const filter = { _id: ObjectId(id) }
+                const options = { upsert: true };
+                const updatedDoc = {
+                    $set: {
+                        report: 'report'
+                    }
+                }
+                const result = await bikeCollection.updateOne(filter, updatedDoc, options);
+                res.send(result);
+            });
+
+            app.get('/report', async (req, res) => {
+                const query = {}
+                const result = await bikeCollection.find({report: 'report'}).toArray();
+                res.send(result);
+            });
+
+            app.delete('/report/:id',verifyJWT, async (req, res) => {
+                const id = req.params.id;
+                const filter = { _id: ObjectId(id) };
+                const result = await bikeCollection.deleteOne(filter);
+                res.send(result);
+            })
+    
+
+
     }
 
 
