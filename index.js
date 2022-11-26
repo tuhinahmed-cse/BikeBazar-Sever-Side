@@ -194,6 +194,23 @@ async function run() {
                 res.send(result);
             });
 
+            app.get('/sellerBike',verifyJWT, async (req, res) => {
+                const email = req.query.email;
+                const decodedEmail = req.decoded.email;
+                if (email !== decodedEmail) {
+                    return res.status(403).send({ message: 'forbidden access' });
+                }
+                const query = { email: email };
+                const getBike = await bikeCollection.find(query).toArray();
+                res.send(getBike);
+            })
+
+            app.delete('/sellerBike/:id',verifyJWT, async (req, res) => {
+                const id = req.params.id;
+                const filter = { _id: ObjectId(id) };
+                const result = await bikeCollection.deleteOne(filter);
+                res.send(result);
+            })
 
 
 
