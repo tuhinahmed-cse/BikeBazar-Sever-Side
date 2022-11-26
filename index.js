@@ -45,7 +45,16 @@ async function run() {
         const usersCollection = client.db('bikeBazar').collection('users');
 
 
+        const verifyAdmin = async (req, res, next) => {
+            const decodedEmail = req.decoded.email;
+            const query = { email: decodedEmail };
+            const user = await usersCollection.findOne(query);
 
+            if (user?.role !== 'admin') {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+            next();
+        }
 
         app.get('/allbikes', async (req, res) => {
             const query = {}
@@ -121,7 +130,7 @@ async function run() {
             res.send(result);
         });
 
-        app.delete('/users/:id',verifyJWT,  async (req, res) => {
+        app.delete('/users/:id',verifyJWT,verifyAdmin,  async (req, res) => {
             const id = req.params.id;
             const filter = { _id: ObjectId(id) };
             const result = await usersCollection.deleteOne(filter);
@@ -179,7 +188,11 @@ async function run() {
                 res.send({ isSeller: user?.role === 'Seller' });
             })
 
-
+            app.post('/bikes', async (req, res) => {
+                const bike = req.body;
+                const result = await bikeCollection.insertOne(bike);
+                res.send(result);
+            });
 
 
 
