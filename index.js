@@ -213,10 +213,26 @@ async function run() {
             })
 
 
+            app.put('/bikes/seller/:id', verifyJWT,  async (req, res) => {
+                const id = req.params.id;
+                const filter = { _id: ObjectId(id) }
+                const options = { upsert: true };
+                const updatedDoc = {
+                    $set: {
+                        advertise: 'advertise'
+                    }
+                }
+                const result = await bikeCollection.updateOne(filter, updatedDoc, options);
+                res.send(result);
+            });
 
+            app.get('/advertise', async (req, res) => {
+                const query = {}
+                const result = await bikeCollection.find({advertise: 'advertise'}).toArray();
+                res.send(result);
+            });
 
-
-
+           
 
 
 
