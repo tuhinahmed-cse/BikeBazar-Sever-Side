@@ -44,6 +44,8 @@ async function run() {
         const bikeCollection = client.db('bikeBazar').collection('allBike');
         const bookingCollection = client.db('bikeBazar').collection('bookings');
         const usersCollection = client.db('bikeBazar').collection('users');
+        const paymentColl = client.db('bikeBazar').collection('payment');
+        
 
 
         const verifyAdmin = async (req, res, next) => {
@@ -280,6 +282,38 @@ async function run() {
                 const result = await  usersCollection.updateOne(filter, updatedDoc, options);
                 res.send(result);
             });
+
+            app.post('/create-payment-intent', async (req, res) => {
+                const booking = req.body;
+                const price = booking.price;
+                const amount = price * 100;
+    
+                const paymentIntent = await stripe.paymentIntents.create({
+                    currency: 'usd',
+                    amount: amount,
+                    "payment_method_types": [
+                        "card"
+                    ]
+                });
+                res.send({
+                    clientSecret: paymentIntent.client_secret,
+                });
+            });
+
+            app.post('/payments', async (req, res) =>{
+                const payment = req.body;
+                const result = await paymentColl.insertOne(payment);
+                const id = payment.bookingId
+                const filter = {_id: ObjectId(id)}
+                const updatedDoc = {
+                    $set: {
+                        paid: true,
+                        transactionId: payment.transactionId
+                    }
+                }
+                const updatedResult = await bookingCollection.updateOne(filter, updatedDoc)
+                res.send(result);
+            })
     
 
 
