@@ -272,14 +272,16 @@ async function run() {
 
             app.put('/verify/:id', async (req, res) => {
                 const id = req.params.id;
-                const filter = { _id: ObjectId(id) }
+                const filter = { 
+                    sell_id : id }
                 const options = { upsert: true };
                 const updatedDoc = {
                     $set: {
                         verify: 'verified'
                     }
                 }
-                const result = await  usersCollection.updateOne(filter, updatedDoc, options);
+                const result = await  bikeCollection.updateMany(filter, updatedDoc, options);
+
                 res.send(result);
             });
 
@@ -315,6 +317,14 @@ async function run() {
                 res.send(result);
             })
     
+
+            app.get('/sell', async (req, res) => {
+                const email = req.query.email;
+                
+                const query = { email: email };
+                const bookings = await usersCollection.find(query).toArray();
+                res.send(bookings);
+            })
 
 
 
